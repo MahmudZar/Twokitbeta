@@ -2,35 +2,35 @@
  * Web app kit: a React + Tailwind CSS v4 + shadcn/ui starter whose components
  * are linked to the TwoKit tokens (web app only; the plugins don't offer it).
  *
- * shadcn's components only use Tailwind color/radius utilities (bg-primary,
- * border-input, rounded-md…). Those come from `@theme inline`, so the kit
- * points them straight at TwoKit tokens there (--color-primary →
- * var(--btn-primary-bg)) instead of redefining shadcn's own :root names, which
- * would clash with TwoKit's --primary palette, --border and --radius. Light and
- * dark follow TwoKit's switch: light-dark() tokens + data-theme, and Tailwind's
- * dark: variant is redefined to match it.
+ * shadcn's components use Tailwind utilities (bg-primary, border-input,
+ * rounded-md, shadow-md…). Those come from `@theme inline`, so the kit points
+ * them straight at TwoKit tokens there (--color-primary →
+ * var(--btn-primary-bg)). shadcn's own runtime names (--popover, --chart-1,
+ * --sidebar-border…, read by a few components and charts) are set as aliases
+ * too, except where TwoKit already has the name (--primary is a palette,
+ * --border and --radius are TwoKit's): those keep TwoKit's value.
  *
- * twokit.css ships in public/ and is linked from index.html, outside the CSS
- * build: Tailwind's optimizer (Lightning CSS) rewrites light-dark() into a
- * polyfill that resolves where the token is declared (:root), so a nested
- * data-theme section would keep the page's colors. Linked as is, light-dark()
- * resolves on the element that uses the token, as in the HTML export.
+ * The vendored components (data/shadcnComponents.js, see
+ * scripts/update-shadcn.mjs) have their states and shadows linked as well:
+ * state text/surface/border use TwoKit's error/success/warning/info tokens,
+ * and each surface uses its TwoKit shadow role (card, raised, popover, dialog).
  *
- * The components (data/shadcnComponents.js, MIT) are vendored by
- * scripts/update-shadcn.mjs; `npx shadcn add …` in the exported project adds
- * more with the same theme.
+ * Light and dark follow TwoKit's switch: light-dark() tokens + data-theme, and
+ * Tailwind's dark: variant is redefined to match it. twokit.css ships in
+ * public/ and is linked from index.html, outside the CSS build: Tailwind's
+ * optimizer (Lightning CSS) rewrites light-dark() into a polyfill that
+ * resolves where the token is declared (:root), so a nested data-theme
+ * section would keep the page's colors.
  *
  * @module shadcnKit
  */
 
-/** The npm packages the starter pins (checked together on 2026-11-08). */
+import { appTsx } from './shadcnKitApp.js';
+
+/** Packages the starter itself needs (the components' own come pinned from data/shadcnComponents.js). */
 const VERSIONS = {
     react: '^19.3.1',
     'react-dom': '^19.3.1',
-    'radix-ui': '^1.8.1',
-    'class-variance-authority': '^0.7.1',
-    cmdk: '^1.1.1',
-    'lucide-react': '^1.70.0',
     clsx: '^2.1.1',
     'tailwind-merge': '^3.7.0',
     'tw-animate-css': '^1.4.0',
@@ -46,35 +46,40 @@ const VERSIONS = {
 
 /**
  * shadcn color → TwoKit token. One list builds the CSS and the README table.
- * Button colors come from Styling → Buttons, so a shadcn Button looks like a
- * TwoKit button.
+ * Button colors and their hovers come from Styling → Buttons, so a shadcn
+ * Button looks like a TwoKit button.
  */
 export const SHADCN_COLORS = [
     ['background', 'site-bg', 'Page background'],
     ['foreground', 'text-primary', 'Body text'],
     ['card', 'surface-card', 'Card'],
     ['card-foreground', 'text-primary', ''],
-    ['popover', 'surface-popover', 'Popover, menus, select'],
+    ['popover', 'surface-popover', 'Popover, menus, select, toasts'],
     ['popover-foreground', 'text-primary', ''],
     ['primary', 'btn-primary-bg', 'Default button, checked controls'],
     ['primary-foreground', 'btn-primary-text', ''],
+    ['primary-hover', 'btn-primary-bg-hover', 'Default button hover'],
     ['secondary', 'btn-secondary-bg', 'Secondary button'],
     ['secondary-foreground', 'btn-secondary-text', ''],
+    ['secondary-hover', 'btn-secondary-bg-hover', 'Secondary button hover'],
     ['muted', 'surface-raised', 'Tabs list, skeleton, table rows'],
     ['muted-foreground', 'text-muted', 'Descriptions, placeholders'],
     ['accent', 'hover', 'Hover and focus in menus, ghost buttons'],
     ['accent-foreground', 'text-primary', ''],
-    ['destructive', 'error-solid', 'Destructive actions, invalid fields'],
-    ['destructive-foreground', 'error-on-solid', ''],
+    ['destructive', 'btn-error-bg', 'Destructive button, invalid fields'],
+    ['destructive-foreground', 'btn-error-text', ''],
+    ['destructive-hover', 'btn-error-bg-hover', 'Destructive button hover'],
+    ['link', 'btn-link-text', 'Link button and badge'],
+    ['link-hover', 'btn-link-text-hover', ''],
     ['border', 'border', 'Borders'],
     ['input', 'border-strong', 'Field borders'],
     ['ring', 'focus-color', 'Focus ring'],
-    ['chart-1', 'primary-500', ''],
+    ['chart-1', 'primary-500', 'Charts'],
     ['chart-2', 'info-solid', ''],
     ['chart-3', 'success-solid', ''],
     ['chart-4', 'warning-solid', ''],
     ['chart-5', 'error-solid', ''],
-    ['sidebar', 'surface-1', 'Sidebar (npx shadcn add sidebar)'],
+    ['sidebar', 'surface-1', 'Sidebar'],
     ['sidebar-foreground', 'text-primary', ''],
     ['sidebar-primary', 'action', ''],
     ['sidebar-primary-foreground', 'on-action', ''],
@@ -82,6 +87,20 @@ export const SHADCN_COLORS = [
     ['sidebar-accent-foreground', 'text-primary', ''],
     ['sidebar-border', 'border', ''],
     ['sidebar-ring', 'focus-color', '']
+];
+
+/** Tailwind shadow names → TwoKit shadows: the role aliases, and the size scale onto TwoKit's 1–8. */
+export const SHADCN_SHADOWS = [
+    ['card', 'shadow-card', 'Card, floating sidebar'],
+    ['raised', 'shadow-raised', 'Active tab, slider thumb'],
+    ['popover', 'shadow-popover', 'Popover, menus, select, hover card, combobox, chart tooltip, toasts'],
+    ['dialog', 'shadow-dialog', 'Dialog, alert dialog, sheet'],
+    ['xs', 'shadow-1', 'Inputs, buttons, checkboxes (shadcn\'s control shadow)'],
+    ['sm', 'shadow-2', ''],
+    ['md', 'shadow-4', ''],
+    ['lg', 'shadow-5', ''],
+    ['xl', 'shadow-6', ''],
+    ['2xl', 'shadow-7', '']
 ];
 
 /** Tailwind radius names → TwoKit radius scale (xs and xl share their names). */
@@ -99,8 +118,11 @@ function darkVariant(mode) {
     return `@custom-variant dark {\n  ${dark}\n}`;
 }
 
-/** src/index.css: Tailwind, the TwoKit tokens and the links between them. */
-export function indexCss({ name, mode, palettes, headings }) {
+/** Every custom property twokit.css defines. */
+const definedIn = (css) => new Set([...css.matchAll(/(?:^|[\s;{])--([\w-]+)\s*:/g)].map((m) => m[1]));
+
+/** src/index.css: Tailwind and the links from shadcn/Tailwind names to TwoKit tokens. */
+export function indexCss({ name, mode, palettes, headings, twokitNames }) {
     const line = (k, v) => `  --${k}: var(--${v});`;
     const colors = SHADCN_COLORS.map(([k, v]) => line(`color-${k}`, v));
     const states = STATES.flatMap((s) => [
@@ -112,7 +134,16 @@ export function indexCss({ name, mode, palettes, headings }) {
     ]);
     const surfaces = SURFACES.map((s) => line(`color-surface-${s}`, `surface-${s}`));
     const shades = palettes.flatMap((p) => p.shades.map((shade) => line(`color-${shade}`, shade)));
+    // TwoKit's role aliases already have Tailwind's names (--shadow-card…); only the size scale needs a line.
+    const shadowScale = SHADCN_SHADOWS.filter(([k, v]) => `shadow-${k}` !== v).map(([k, v]) => line(`shadow-${k}`, v));
+    const shadowRoles = SHADCN_SHADOWS.filter(([k, v]) => `shadow-${k}` === v).map(([k]) => line(`shadow-${k}`, `shadow-${k}`));
+    const runtime = SHADCN_COLORS.filter(([k]) => !twokitNames.has(k)).map(([k, v]) => line(k, v));
+    const kept = SHADCN_COLORS.filter(([k]) => twokitNames.has(k)).map(([k]) => `--${k}`);
     const heading = headings.map((h) => `  ${h.tag} { font-size: var(--${h.token}); }`).join('\n');
+    const sonner = STATES.map((s) => {
+        const t = s === 'error' ? 'error' : s;
+        return `  --${s}-bg: var(--tk-${t}-surface);\n  --${s}-border: var(--tk-${t}-border);\n  --${s}-text: var(--tk-${t}-text);`;
+    }).join('\n');
 
     return `/* ${name} · web app theme, generated by TwoKit.
    shadcn/ui components read Tailwind's theme below, and every value points at a
@@ -142,11 +173,33 @@ ${surfaces.join('\n')}
   /* Palettes: bg-primary-500, text-info-700… */
 ${shades.join('\n')}
 
+  /* Shadows: TwoKit's roles (shadow-card, shadow-raised, shadow-popover, shadow-dialog)
+     and shadcn's sizes on TwoKit's scale */
+${shadowRoles.join('\n')}
+${shadowScale.join('\n')}
+
   /* Radius: rounded-sm/md/lg/2xl (rounded-xs and rounded-xl use TwoKit's own) */
 ${RADII.map(([k, v]) => line(`radius-${k}`, v)).join('\n')}
 
   /* Fonts */
   --font-sans: var(--font-body);
+}
+
+/* shadcn's own names, for the few places that read them directly (toasts, sidebar,
+   chart configs like color: "var(--chart-1)").${kept.length ? ` ${kept.join(', ')} stay TwoKit's.` : ''} */
+:root {
+${runtime.join('\n')}
+
+  /* TwoKit state tokens under names the toaster doesn't overwrite */
+${STATES.flatMap((s) => [`  --tk-${s}-surface: var(--${s}-surface);`, `  --tk-${s}-border: var(--${s}-border);`, `  --tk-${s}-text: var(--${s}-text);`]).join('\n')}
+}
+
+/* Toasts (sonner, <Toaster richColors />): TwoKit's state colors and popover shadow */
+:root [data-sonner-toaster][data-sonner-theme] {
+${sonner}
+}
+:root [data-sonner-toaster] [data-sonner-toast] {
+  box-shadow: var(--shadow-popover);
 }
 
 @layer base {
@@ -165,409 +218,14 @@ ${RADII.map(([k, v]) => line(`radius-${k}`, v)).join('\n')}
   }
 ${heading}
 }
-
-/* Link buttons and badges take TwoKit's link colors (Styling → Buttons → Link):
-   primary is a fill color and can be too light for text. */
-@layer utilities {
-  [data-slot="button"][data-variant="link"],
-  [data-slot="badge"][data-variant="link"] {
-    color: var(--btn-link-text);
-  }
-  [data-slot="button"][data-variant="link"]:hover {
-    color: var(--btn-link-text-hover);
-  }
-}
 `;
 }
-
-/** The demo page: every component in use, so the theme can be checked at a glance. */
-const APP_TSX = (name) => `import { useEffect, useState } from "react"
-import { Bell, Bold, CircleCheck, CreditCard, Italic, LogOut, Mail, Monitor, Moon, Plus, Search, Settings, Sun, TriangleAlert, Underline, User } from "lucide-react"
-
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from "@/components/ui/command"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
-import { Kbd, KbdGroup } from "@/components/ui/kbd"
-import { Label } from "@/components/ui/label"
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Slider } from "@/components/ui/slider"
-import { Spinner } from "@/components/ui/spinner"
-import { Switch } from "@/components/ui/switch"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Textarea } from "@/components/ui/textarea"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-
-type Theme = "light" | "dark" | "system"
-
-/** TwoKit switches themes with data-theme on <html> (index.html applies the saved choice before paint). */
-function useTheme() {
-  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem("theme") as Theme) || "system")
-  useEffect(() => {
-    const root = document.documentElement
-    if (theme === "system") {
-      root.setAttribute("data-theme", matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-      localStorage.removeItem("theme")
-    } else {
-      root.setAttribute("data-theme", theme)
-      localStorage.setItem("theme", theme)
-    }
-  }, [theme])
-  return [theme, setTheme] as const
-}
-
-const invoices = [
-  { id: "INV-001", customer: "Ada Lovelace", status: "Paid", amount: "$250.00" },
-  { id: "INV-002", customer: "Grace Hopper", status: "Pending", amount: "$150.00" },
-  { id: "INV-003", customer: "Alan Turing", status: "Unpaid", amount: "$350.00" },
-  { id: "INV-004", customer: "Katherine Johnson", status: "Paid", amount: "$450.00" },
-]
-
-// Whole class names, so Tailwind finds them in the source.
-const swatches = [
-  ["background", "bg-background"], ["card", "bg-card"], ["popover", "bg-popover"], ["primary", "bg-primary"], ["secondary", "bg-secondary"],
-  ["muted", "bg-muted"], ["accent", "bg-accent"], ["destructive", "bg-destructive"], ["border", "bg-border"], ["ring", "bg-ring"],
-]
-
-export default function App() {
-  const [theme, setTheme] = useTheme()
-  const [search, setSearch] = useState(false)
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setSearch((open) => !open)
-      }
-    }
-    document.addEventListener("keydown", onKey)
-    return () => document.removeEventListener("keydown", onKey)
-  }, [])
-
-  return (
-    <TooltipProvider>
-      <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
-          <span className="font-semibold">${name.replace(/[{}<>`$\\]/g, '')}</span>
-          <div className="flex-1" />
-          <Button variant="outline" className="w-56 justify-start text-muted-foreground" onClick={() => setSearch(true)}>
-            <Search /> Search…
-            <KbdGroup className="ml-auto"><Kbd>Ctrl</Kbd><Kbd>K</Kbd></KbdGroup>
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Theme">
-                {theme === "dark" ? <Moon /> : theme === "light" ? <Sun /> : <Monitor />}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Theme</DropdownMenuLabel>
-              <DropdownMenuRadioGroup value={theme} onValueChange={(v) => setTheme(v as Theme)}>
-                <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="system">System</DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50" aria-label="Account">
-                <Avatar><AvatarFallback>TK</AvatarFallback></Avatar>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel>My account</DropdownMenuLabel>
-              <DropdownMenuItem><User /> Profile</DropdownMenuItem>
-              <DropdownMenuItem><CreditCard /> Billing</DropdownMenuItem>
-              <DropdownMenuItem><Settings /> Settings</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem variant="destructive"><LogOut /> Log out</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </header>
-
-      <CommandDialog open={search} onOpenChange={setSearch}>
-        <CommandInput placeholder="Type a command or search…" />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Suggestions">
-            <CommandItem><Mail /> Inbox</CommandItem>
-            <CommandItem><Bell /> Notifications</CommandItem>
-            <CommandItem><Plus /> New project<CommandShortcut>Ctrl N</CommandShortcut></CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Theme">
-            <CommandItem onSelect={() => { setTheme("light"); setSearch(false) }}><Sun /> Light</CommandItem>
-            <CommandItem onSelect={() => { setTheme("dark"); setSearch(false) }}><Moon /> Dark</CommandItem>
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
-
-      <main className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-10">
-        <section className="flex flex-col gap-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem><BreadcrumbLink href="#">Home</BreadcrumbLink></BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem><BreadcrumbPage>Components</BreadcrumbPage></BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <h1>Components</h1>
-          <p className="max-w-2xl text-muted-foreground">shadcn/ui components linked to your TwoKit design system: colors, surfaces, radius and fonts all come from twokit.css, in light and dark.</p>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button>Primary</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="outline">Outline</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="destructive">Destructive</Button>
-            <Button variant="link">Link</Button>
-            <Button disabled><Spinner /> Loading</Button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Badge>Default</Badge>
-            <Badge variant="secondary">Secondary</Badge>
-            <Badge variant="outline">Outline</Badge>
-            <Badge variant="destructive">Destructive</Badge>
-            <Badge className="bg-success text-success-foreground">Success</Badge>
-            <Badge className="bg-warning text-warning-foreground">Warning</Badge>
-            <Badge className="bg-info text-info-foreground">Info</Badge>
-          </div>
-        </section>
-
-        <Tabs defaultValue="overlays">
-          <TabsList>
-            <TabsTrigger value="overlays">Overlays</TabsTrigger>
-            <TabsTrigger value="form">Form</TabsTrigger>
-            <TabsTrigger value="data">Data</TabsTrigger>
-            <TabsTrigger value="tokens">Tokens</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overlays" className="grid gap-4 pt-2 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader><CardTitle>Popover & tooltip</CardTitle><CardDescription>Floating surfaces use the popover color.</CardDescription></CardHeader>
-              <CardContent className="flex flex-wrap gap-2">
-                <Popover>
-                  <PopoverTrigger asChild><Button variant="outline">Open popover</Button></PopoverTrigger>
-                  <PopoverContent className="flex flex-col gap-3">
-                    <p className="text-sm font-medium">Dimensions</p>
-                    <div className="grid grid-cols-3 items-center gap-2"><Label htmlFor="width">Width</Label><Input id="width" defaultValue="100%" className="col-span-2 h-8" /></div>
-                    <div className="grid grid-cols-3 items-center gap-2"><Label htmlFor="height">Height</Label><Input id="height" defaultValue="25px" className="col-span-2 h-8" /></div>
-                  </PopoverContent>
-                </Popover>
-                <Tooltip>
-                  <TooltipTrigger asChild><Button variant="secondary">Hover me</Button></TooltipTrigger>
-                  <TooltipContent>Add to library</TooltipContent>
-                </Tooltip>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader><CardTitle>Dialogs</CardTitle><CardDescription>Dialog, alert dialog and sheet.</CardDescription></CardHeader>
-              <CardContent className="flex flex-wrap gap-2">
-                <Dialog>
-                  <DialogTrigger asChild><Button variant="outline">Edit profile</Button></DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader><DialogTitle>Edit profile</DialogTitle><DialogDescription>Make changes to your profile here.</DialogDescription></DialogHeader>
-                    <div className="grid gap-3"><Label htmlFor="name">Name</Label><Input id="name" defaultValue="Ada Lovelace" /></div>
-                    <DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button>Save changes</Button></DialogFooter>
-                  </DialogContent>
-                </Dialog>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild><Button variant="destructive">Delete</Button></AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This can't be undone.</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction>Continue</AlertDialogAction></AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <Sheet>
-                  <SheetTrigger asChild><Button variant="ghost">Open sheet</Button></SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader><SheetTitle>Notifications</SheetTitle><SheetDescription>You have 3 unread messages.</SheetDescription></SheetHeader>
-                  </SheetContent>
-                </Sheet>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader><CardTitle>Toggles</CardTitle><CardDescription>Toggle group and keyboard keys.</CardDescription></CardHeader>
-              <CardContent className="flex flex-col gap-4">
-                <ToggleGroup type="multiple" variant="outline" defaultValue={["bold"]}>
-                  <ToggleGroupItem value="bold" aria-label="Bold"><Bold /></ToggleGroupItem>
-                  <ToggleGroupItem value="italic" aria-label="Italic"><Italic /></ToggleGroupItem>
-                  <ToggleGroupItem value="underline" aria-label="Underline"><Underline /></ToggleGroupItem>
-                </ToggleGroup>
-                <p className="text-sm text-muted-foreground">Press <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd> to search.</p>
-              </CardContent>
-            </Card>
-            <Card className="md:col-span-2">
-              <CardHeader><CardTitle>Alerts</CardTitle></CardHeader>
-              <CardContent className="grid gap-3">
-                <Alert><CircleCheck /><AlertTitle>Saved</AlertTitle><AlertDescription>Your changes are live.</AlertDescription></Alert>
-                <Alert variant="destructive"><TriangleAlert /><AlertTitle>Payment failed</AlertTitle><AlertDescription>Check your card details and try again.</AlertDescription></Alert>
-                <Alert className="border-warning-border bg-warning-surface text-warning-text"><TriangleAlert /><AlertTitle>Heads up</AlertTitle><AlertDescription className="text-warning-text">State colors come from TwoKit too.</AlertDescription></Alert>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader><CardTitle>Accordion</CardTitle></CardHeader>
-              <CardContent>
-                <Accordion type="single" collapsible defaultValue="a">
-                  <AccordionItem value="a"><AccordionTrigger>Is it accessible?</AccordionTrigger><AccordionContent>Yes. It follows the WAI-ARIA pattern.</AccordionContent></AccordionItem>
-                  <AccordionItem value="b"><AccordionTrigger>Is it styled?</AccordionTrigger><AccordionContent>With your TwoKit tokens.</AccordionContent></AccordionItem>
-                </Accordion>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader><CardTitle>Loading</CardTitle></CardHeader>
-              <CardContent className="flex items-center gap-4">
-                <Skeleton className="size-12 rounded-full" />
-                <div className="flex flex-1 flex-col gap-2"><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-2/3" /></div>
-                <Spinner />
-              </CardContent>
-            </Card>
-            <Card className="md:col-span-2">
-              <CardHeader><CardTitle>Scroll area</CardTitle></CardHeader>
-              <CardContent>
-                <ScrollArea className="h-32 rounded-md border">
-                  <div className="p-4 text-sm">
-                    {Array.from({ length: 20 }, (_, i) => <p key={i} className="py-1">v1.{20 - i}.0</p>)}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="form" className="pt-2">
-            <Card className="max-w-2xl">
-              <CardHeader><CardTitle>Create an account</CardTitle><CardDescription>Fields, selects, checkboxes, radios, switches and sliders.</CardDescription></CardHeader>
-              <CardContent>
-                <form onSubmit={(e) => e.preventDefault()}>
-                  <FieldGroup>
-                    <Field><FieldLabel htmlFor="full-name">Full name</FieldLabel><Input id="full-name" placeholder="Ada Lovelace" /></Field>
-                    <Field>
-                      <FieldLabel htmlFor="email">Email</FieldLabel>
-                      <InputGroup>
-                        <InputGroupInput id="email" type="email" placeholder="ada@example.com" />
-                        <InputGroupAddon><Mail /></InputGroupAddon>
-                      </InputGroup>
-                      <FieldDescription>We never share it.</FieldDescription>
-                    </Field>
-                    <Field>
-                      <FieldLabel>Plan</FieldLabel>
-                      <Select defaultValue="pro">
-                        <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="free">Free</SelectItem>
-                          <SelectItem value="pro">Pro</SelectItem>
-                          <SelectItem value="team">Team</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </Field>
-                    <Field><FieldLabel htmlFor="about">About</FieldLabel><Textarea id="about" placeholder="Tell us a little about yourself" /></Field>
-                    <FieldSet>
-                      <FieldLegend variant="label">Billing</FieldLegend>
-                      <RadioGroup defaultValue="monthly">
-                        <Field orientation="horizontal"><RadioGroupItem value="monthly" id="monthly" /><FieldLabel htmlFor="monthly" className="font-normal">Monthly</FieldLabel></Field>
-                        <Field orientation="horizontal"><RadioGroupItem value="yearly" id="yearly" /><FieldLabel htmlFor="yearly" className="font-normal">Yearly</FieldLabel></Field>
-                      </RadioGroup>
-                    </FieldSet>
-                    <Field><FieldLabel>Team size</FieldLabel><Slider defaultValue={[30]} max={100} step={1} /></Field>
-                    <Field orientation="horizontal"><Switch id="news" defaultChecked /><FieldLabel htmlFor="news" className="font-normal">Send me product news</FieldLabel></Field>
-                    <Field orientation="horizontal"><Checkbox id="terms" /><FieldLabel htmlFor="terms" className="font-normal">I accept the terms</FieldLabel></Field>
-                  </FieldGroup>
-                </form>
-              </CardContent>
-              <CardFooter className="gap-2"><Button variant="outline">Cancel</Button><Button>Create account</Button></CardFooter>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="data" className="flex flex-col gap-4 pt-2">
-            <Card>
-              <CardHeader><CardTitle>Invoices</CardTitle><CardDescription>Table and pagination.</CardDescription></CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader><TableRow><TableHead>Invoice</TableHead><TableHead>Customer</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Amount</TableHead></TableRow></TableHeader>
-                  <TableBody>
-                    {invoices.map((inv) => (
-                      <TableRow key={inv.id}>
-                        <TableCell className="font-medium">{inv.id}</TableCell>
-                        <TableCell>{inv.customer}</TableCell>
-                        <TableCell><Badge variant={inv.status === "Paid" ? "secondary" : inv.status === "Unpaid" ? "destructive" : "outline"}>{inv.status}</Badge></TableCell>
-                        <TableCell className="text-right">{inv.amount}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-              <CardFooter>
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem><PaginationPrevious href="#" /></PaginationItem>
-                    <PaginationItem><PaginationLink href="#" isActive>1</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink href="#">2</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationNext href="#" /></PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="tokens" className="flex flex-col gap-6 pt-2">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-              {swatches.map(([name, bg]) => (
-                <div key={name} className="flex flex-col gap-1.5">
-                  <div className={\`h-14 rounded-md border \${bg}\`} />
-                  <span className="text-xs text-muted-foreground">{name}</span>
-                </div>
-              ))}
-            </div>
-            <Separator />
-            <div className="grid gap-4 md:grid-cols-2">
-              {(["light", "dark"] as const).map((mode) => (
-                <div key={mode} data-theme={mode} className="flex flex-col gap-3 rounded-lg border bg-background p-4 text-foreground">
-                  <p className="text-sm text-muted-foreground">data-theme="{mode}" on a section</p>
-                  <div className="flex flex-wrap gap-2"><Button>Primary</Button><Button variant="outline">Outline</Button><Badge variant="secondary">Badge</Badge></div>
-                  <Input placeholder="Input" />
-                </div>
-              ))}
-            </div>
-            <Separator />
-            <div className="flex flex-wrap gap-2">
-              {["0", "1", "2", "3", "4", "5", "6", "7", "8"].map((n) => (
-                <div key={n} className="flex size-16 items-end rounded-md border p-1.5 text-xs text-muted-foreground" style={{ background: \`var(--surface-\${n})\` }}>{n}</div>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </main>
-    </TooltipProvider>
-  )
-}
-`;
 
 const README = ({ name, folder, fonts, components }) => `# ${name} · web app kit
 
 A React + Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com) starter, generated by TwoKit.
-Every component is linked to your TwoKit design system: colors, surfaces, radius,
-fonts and light/dark all come from \`public/twokit.css\`.
+Every component is linked to your TwoKit design system: colors, state colors, surfaces,
+shadows, radius, fonts and light/dark all come from \`public/twokit.css\`.
 
 ## Run it
 
@@ -577,7 +235,8 @@ npm install
 npm run dev
 \`\`\`
 
-\`src/App.tsx\` shows every component (Ctrl/Cmd K opens the search). Replace it with your app.
+\`src/App.tsx\` is a small app (sidebar, header, pages) that uses every component; Ctrl/Cmd K
+opens the search. Replace it with your app.
 
 ## What's inside
 
@@ -585,6 +244,7 @@ npm run dev
 public/twokit.css      your TwoKit tokens (same as variables.css in the HTML & CSS export), linked in index.html
 src/index.css          Tailwind + the links from shadcn/Tailwind names to TwoKit tokens
 src/components/ui/     ${components.length} shadcn/ui components
+src/hooks/             hooks the components use
 src/lib/utils.ts       cn() helper
 components.json        shadcn CLI settings${fonts ? '\npublic/fonts.css      @font-face rules, files in public/fonts/' : ''}
 \`\`\`
@@ -596,37 +256,45 @@ Components: ${components.join(', ')}.
 Change it in TwoKit, export again and replace \`public/twokit.css\` (and \`src/index.css\` if you
 added palettes). The components follow, nothing else to change.
 
-## More components
-
-\`\`\`bash
-npx shadcn@latest add calendar chart sidebar
-\`\`\`
-
-They use the same theme: \`components.json\` points the CLI at \`src/index.css\`. If the CLI adds
-\`:root\` variables to \`src/index.css\` (some blocks do), delete the ones TwoKit already links below.
-
 ## Light and dark
 
 TwoKit switches with \`data-theme="light|dark"\` on \`<html>\` or on any element, and Tailwind's
-\`dark:\` variant follows it. With next-themes use \`<ThemeProvider attribute="data-theme">\`.
+\`dark:\` variant follows it. The kit uses next-themes with \`attribute="data-theme"\`.
 
 ## How the components are linked
 
 | shadcn / Tailwind | TwoKit token | Used for |
 |---|---|---|
 ${SHADCN_COLORS.map(([k, v, use]) => `| \`${k}\` | \`--${v}\` | ${use} |`).join('\n')}
+${SHADCN_SHADOWS.map(([k, v, use]) => `| \`shadow-${k}\` | \`--${v}\` | ${use} |`).join('\n')}
 | \`rounded-sm/md/lg/2xl\` | \`--radius-s/m/l/xxl\` | Radius |
 | \`font-sans\` | \`--font-body\` | Body font; headings use \`--font-heading\` |
-| Button / Badge \`variant="link"\` | \`--btn-link-text\`, \`--btn-link-text-hover\` | Link text |
+
+States: the bundled components use TwoKit's state tokens, not see-through tints of one red.
+Alert has \`destructive\`, \`success\`, \`warning\` and \`info\` variants (surface, border and text
+color of that state), Badge has \`success\`, \`warning\` and \`info\` too, error text uses
+\`--error-text\`, and dark mode keeps the solid colors as TwoKit made them.
 
 Extra utilities: \`bg-success\`, \`text-warning-text\`, \`bg-info-surface\`, \`border-error-border\`,
-\`bg-surface-0…8\`, \`bg-surface-card\`, and every palette shade (\`bg-primary-500\`).
+\`bg-surface-0…8\`, \`bg-surface-card\`, every palette shade (\`bg-primary-500\`), and
+\`shadow-card\`, \`shadow-raised\`, \`shadow-popover\`, \`shadow-dialog\`.
+
+## More components
+
+\`\`\`bash
+npx shadcn@latest add <name>
+\`\`\`
+
+They use the same theme: \`components.json\` points the CLI at \`src/index.css\`. Components added
+this way come as shadcn writes them (one red for states, shadcn's shadow sizes, which are
+mapped onto TwoKit's scale). If the CLI adds \`:root\` variables to \`src/index.css\`, delete the
+ones this file already sets.
 
 ## Use it in an existing project
 
-Copy \`public/twokit.css\` and link it in your page, \`src/index.css\` (or its \`@custom-variant\`, \`@theme inline\` and
-\`@layer base\` parts into your globals.css), \`src/lib/utils.ts\` and \`src/components/ui/\`, then
-install the packages in \`package.json\` → dependencies.
+Copy \`public/twokit.css\` and link it in your page, \`src/index.css\` (or its \`@custom-variant\`,
+\`@theme inline\`, \`:root\` and \`@layer base\` parts into your globals.css), \`src/lib/utils.ts\`,
+\`src/hooks/\` and \`src/components/ui/\`, then install the packages in \`package.json\` → dependencies.
 
 Keep \`twokit.css\` out of your CSS build (don't \`@import\` it into a Tailwind file): build tools
 rewrite its \`light-dark()\` tokens, and then a \`data-theme\` section inside the page keeps the
@@ -647,13 +315,15 @@ shadcn/ui components: MIT License, Copyright (c) 2023 shadcn.
  * @param {{shades: string[]}[]} o.palettes palette shade token names
  * @param {{tag: string, token: string}[]} o.headings heading size tokens
  * @param {{fontsCss: string, files: {path: string, content: Uint8Array}[]}|null} o.fonts
- * @param {{components: Record<string,string>, packages: string[], style: string}} o.shadcn
+ * @param {{files: Record<string,string>, components: string[], packages: Record<string,string>}} o.shadcn
  */
 export function buildShadcnKit({ name, folder, slug, variablesCss, mode, palettes, headings, fonts, shadcn }) {
-    const deps = ['react', 'react-dom', ...shadcn.packages, 'clsx', 'tailwind-merge', 'tw-animate-css', 'tailwindcss', '@tailwindcss/vite'];
-    const pick = (list) => Object.fromEntries([...new Set(list)].sort().map((p) => [p, VERSIONS[p] || 'latest']));
+    const versions = { ...VERSIONS, ...shadcn.packages, 'next-themes': shadcn.packages['next-themes'] || '^0.4.6' };
+    const pick = (list) => Object.fromEntries([...new Set(list)].sort().map((p) => [p, versions[p]]));
+    const deps = ['react', 'react-dom', ...Object.keys(shadcn.packages), 'next-themes', 'clsx', 'tailwind-merge', 'tw-animate-css', 'tailwindcss', '@tailwindcss/vite'];
     const html = mode === 'auto' ? '' : ` data-theme="${mode === 'dark' ? 'dark' : 'light'}"`;
-    const components = Object.keys(shadcn.components);
+    const defaultTheme = mode === 'auto' ? 'system' : mode === 'dark' ? 'dark' : 'light';
+    const { components } = shadcn;
 
     const files = [
         ['package.json', `${JSON.stringify({
@@ -674,8 +344,8 @@ export function buildShadcnKit({ name, folder, slug, variablesCss, mode, palette
 ${fonts ? '    <link rel="stylesheet" href="/fonts.css" />\n' : ''}    <!-- TwoKit tokens, as is (not through the CSS build: see src/index.css) -->
     <link rel="stylesheet" href="/twokit.css" />
     <script>
-      // The saved theme before the first paint (no flash). Without one, TwoKit's default applies.
-      try { var t = localStorage.getItem("theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+      // The saved theme before the first paint (no flash). "system" and none: TwoKit's default applies.
+      try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
     </script>
   </head>
   <body>
@@ -724,18 +394,25 @@ export default defineConfig({
         ['README.md', README({ name, folder, fonts: !!fonts, components })],
         ['src/main.tsx', `import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
+import { ThemeProvider } from "next-themes"
 
 import "./index.css"
 import App from "./App"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    {/* TwoKit switches themes with data-theme */}
+    <ThemeProvider attribute="data-theme" defaultTheme="${defaultTheme}" enableSystem disableTransitionOnChange>
+      <TooltipProvider>
+        <App />
+      </TooltipProvider>
+    </ThemeProvider>
   </StrictMode>
 )
 `],
-        ['src/App.tsx', APP_TSX(name)],
-        ['src/index.css', indexCss({ name, mode, palettes, headings })],
+        ['src/App.tsx', appTsx(name)],
+        ['src/index.css', indexCss({ name, mode, palettes, headings, twokitNames: definedIn(variablesCss) })],
         ['public/twokit.css', variablesCss],
         ['src/lib/utils.ts', `import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
@@ -744,7 +421,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 `],
-        ...components.map((c) => [`src/components/ui/${c}.tsx`, shadcn.components[c]])
+        ...Object.entries(shadcn.files).map(([path, code]) => [`src/${path}`, code])
     ].map(([path, content]) => ({ path, content }));
 
     if (fonts) {

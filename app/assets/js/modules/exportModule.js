@@ -1034,9 +1034,9 @@ ${fonts ? '  <link rel="stylesheet" href="fonts.css">\n' : ''}  <link rel="style
             fonts: AppState.fonts.length
                 ? { fontsCss: this.fontFaceCss(assets, { vars: false, skipped }), files: assets.map((a) => ({ path: a.filename, content: a.bytes })) }
                 : null,
-            shadcn: { components: shadcn.SHADCN_COMPONENTS, packages: shadcn.SHADCN_PACKAGES, style: shadcn.SHADCN_STYLE }
+            shadcn: { files: shadcn.SHADCN_FILES, components: shadcn.SHADCN_COMPONENTS, packages: shadcn.SHADCN_PACKAGES }
         });
-        return { folder, skipped, files, components: Object.keys(shadcn.SHADCN_COMPONENTS) };
+        return { folder, skipped, files, components: shadcn.SHADCN_COMPONENTS };
     },
 
     /* ================================================================

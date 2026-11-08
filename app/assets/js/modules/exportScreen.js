@@ -299,7 +299,8 @@ function cssPanel(c) {
 /* Web app (shadcn/ui)                                                 */
 /* ------------------------------------------------------------------ */
 
-const KIT_COMPONENTS = 34;
+/** shadcn/ui components in the kit (data/shadcnComponents.js, which only loads at export). */
+const KIT_COMPONENTS = 54;
 
 function webappPanel(c) {
     const fonts = AppState.fonts.length;
@@ -311,11 +312,11 @@ function webappPanel(c) {
           <section class="ex-section ex-section--top">
             ${sectionHead('What’s in the kit', 'One project folder, ready to run or to copy into an app you already have')}
             <div class="ex-list">
-              ${contentRow({ icon: I.layers, title: 'shadcn/ui components', desc: 'Buttons, form fields, tabs, popover, dialog, menus, search, table and more', count: KIT_COMPONENTS })}
+              ${contentRow({ icon: I.layers, title: 'shadcn/ui components', desc: 'Sidebar, buttons and icon buttons, form fields, date picker, tabs, popover, dialog, drawer, menus, search, toasts, table, chart and more', count: KIT_COMPONENTS })}
               ${contentRow({ icon: I.braces, title: 'twokit.css', desc: 'Your tokens, the same file as variables.css', count: c.properties })}
-              ${contentRow({ icon: I.palette, title: 'Theme links', desc: 'Every shadcn color, radius and font points at a TwoKit token, light and dark included', count: 'All' })}
+              ${contentRow({ icon: I.palette, title: 'Theme links', desc: 'Every shadcn color, state color, shadow, radius and font points at a TwoKit token, light and dark included', count: 'All' })}
               ${contentRow({ icon: I.type, title: 'Fonts', desc: fonts ? 'Self-hosted WOFF2 files with their @font-face rules' : 'Your font library is empty: system fonts, nothing to ship', count: fonts, dim: !fonts })}
-              ${contentRow({ icon: I.code, title: 'Demo page', desc: 'Every component in use, with a theme switch and Ctrl/Cmd K search', count: 1 })}
+              ${contentRow({ icon: I.code, title: 'Demo page', desc: 'A small app (sidebar, header, pages) using every component, with a theme switch and Ctrl/Cmd K search', count: 1 })}
             </div>
           </section>
           <hr class="ex-divider">
