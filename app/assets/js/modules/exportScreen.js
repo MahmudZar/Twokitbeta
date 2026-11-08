@@ -53,8 +53,10 @@ const TARGETS = [
     { id: 'bricks', title: 'Bricks Builder', detail: 'Global data file · .zip', logo: 'img/export/bricks.png' },
     { id: 'figma', title: 'Figma', detail: 'Variables & styles · .json', logo: 'img/export/figma.svg' },
     { id: 'css', title: 'HTML & CSS', detail: 'Style guide · .zip / .css', logo: 'img/export/css.svg' },
+    // Web app only: the plugins keep their four destinations.
+    { id: 'webapp', title: 'Web app (shadcn/ui)', detail: 'React + Tailwind kit · .zip', logo: 'img/export/shadcn.svg', web: true },
     { id: 'twokit', title: 'TwoKit', detail: 'Project file · .twokit.zip', logo: 'img/export/twokit.svg' }
-];
+].filter((t) => !t.web || Platform.is('web'));
 
 const PARTS = {
     variables: { label: 'Variables', icon: I.braces },
@@ -113,7 +115,7 @@ function summary(c, t) {
     const open = AppState.ui.exportSummaryOpen === true;
     const stat = (n, label, key = '') => `<div class="ex-stat"><b${key ? ` data-ex-count="${key}"` : ''}>${n}</b><span>${esc(label)}</span></div>`;
     const pending = '…';
-    const css = t === 'css' || t === 'twokit';
+    const css = t === 'css' || t === 'twokit' || t === 'webapp';
     const variables = t === 'figma' ? pending : css ? c.properties : c.variables;
     const more = [
         ['Palettes', c.palettes], ['Theme tokens', c.themeTokens], ['Utility classes', c.classes],
@@ -294,6 +296,42 @@ function cssPanel(c) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Web app (shadcn/ui)                                                 */
+/* ------------------------------------------------------------------ */
+
+const KIT_COMPONENTS = 34;
+
+function webappPanel(c) {
+    const fonts = AppState.fonts.length;
+    const meta = [`${esc(ExportModule.webAppName())}.zip`, 'React 19 · Tailwind CSS 4 · Vite', fonts ? `${plural(fonts, 'font')} (WOFF2)` : 'system fonts'].join('  ·  ');
+    return `
+      <div class="ex-panel">
+        <div class="ex-panel__body">
+          ${head('Web app (shadcn/ui)', 'A React + Tailwind starter with shadcn/ui components already linked to your design system. Unzip, run <code>npm install</code> and <code>npm run dev</code>.')}
+          <section class="ex-section ex-section--top">
+            ${sectionHead('What’s in the kit', 'One project folder, ready to run or to copy into an app you already have')}
+            <div class="ex-list">
+              ${contentRow({ icon: I.layers, title: 'shadcn/ui components', desc: 'Buttons, form fields, tabs, popover, dialog, menus, search, table and more', count: KIT_COMPONENTS })}
+              ${contentRow({ icon: I.braces, title: 'twokit.css', desc: 'Your tokens, the same file as variables.css', count: c.properties })}
+              ${contentRow({ icon: I.palette, title: 'Theme links', desc: 'Every shadcn color, radius and font points at a TwoKit token, light and dark included', count: 'All' })}
+              ${contentRow({ icon: I.type, title: 'Fonts', desc: fonts ? 'Self-hosted WOFF2 files with their @font-face rules' : 'Your font library is empty: system fonts, nothing to ship', count: fonts, dim: !fonts })}
+              ${contentRow({ icon: I.code, title: 'Demo page', desc: 'Every component in use, with a theme switch and Ctrl/Cmd K search', count: 1 })}
+            </div>
+          </section>
+          <hr class="ex-divider">
+          <section class="ex-section">
+            ${sectionHead('Add more later', 'The kit is set up for the shadcn CLI, so new components use the same theme')}
+            <div class="ex-card">
+              <span class="ex-tile">${I.plug}</span>
+              <span class="ex-content__text"><b>npx shadcn@latest add calendar</b><small>Any component from ui.shadcn.com. Export again and replace public/twokit.css when the design changes.</small></span>
+            </div>
+          </section>
+        </div>
+        ${cta('shadcn-all', 'Download web app kit (.zip)', meta)}
+      </div>`;
+}
+
+/* ------------------------------------------------------------------ */
 /* TwoKit project                                                      */
 /* ------------------------------------------------------------------ */
 
@@ -358,7 +396,7 @@ const ExportScreen = {
             </section>
             ${summary(c, t)}
           </div>`;
-        const panels = { figma: figmaPanel, css: cssPanel, twokit: twokitPanel };
+        const panels = { figma: figmaPanel, css: cssPanel, webapp: webappPanel, twokit: twokitPanel };
         const preview = (panels[t] || bricksPanel)(c);
         return { control, preview: `<div class="ex-view" data-ex-view="${t}">${preview}</div>` };
     },

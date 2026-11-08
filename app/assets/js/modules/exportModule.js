@@ -1002,6 +1002,43 @@ ${fonts ? '  <link rel="stylesheet" href="fonts.css">\n' : ''}  <link rel="style
         return { folder, skipped, files: files.map((f) => ({ ...f, path: `${folder}/${f.path}` })) };
     },
 
+    /** Folder name of the web app kit: "Soco web app". */
+    webAppName() {
+        return `${projectName()} web app`;
+    },
+
+    /**
+     * The web app kit (core/shadcnKit.js): a React + Tailwind + shadcn/ui
+     * starter linked to these tokens. The components load only here.
+     */
+    async shadcnPackage(model = this.model()) {
+        const [{ buildShadcnKit }, shadcn] = await Promise.all([import('../core/shadcnKit.js'), import('../data/shadcnComponents.js')]);
+        const folder = this.webAppName();
+        const skipped = [];
+        const assets = AppState.fonts.length ? await this.fontAssets({ onError: (font) => skipped.push(font) }) : [];
+        // Palette shades as their token names, grouped per palette ("primary-500").
+        const palettes = [...AppState.colors, ...AppState.stateColors].map((c) => ({
+            shades: (c.shades || []).map((s) => AppState.tokenName('color', s.name))
+        }));
+        const headings = (AppState.typography.scale?.headings || [])
+            .filter((h) => /^h[1-6]$/.test(h.name))
+            .map((h) => ({ tag: h.name, token: AppState.tokenName('type', h.name) }));
+        const files = buildShadcnKit({
+            name: projectName(),
+            folder,
+            slug: slug(folder),
+            variablesCss: this.variablesCss(model),
+            mode: AppState.theme.defaultMode,
+            palettes,
+            headings,
+            fonts: AppState.fonts.length
+                ? { fontsCss: this.fontFaceCss(assets, { vars: false, skipped }), files: assets.map((a) => ({ path: a.filename, content: a.bytes })) }
+                : null,
+            shadcn: { components: shadcn.SHADCN_COMPONENTS, packages: shadcn.SHADCN_PACKAGES, style: shadcn.SHADCN_STYLE }
+        });
+        return { folder, skipped, files, components: Object.keys(shadcn.SHADCN_COMPONENTS) };
+    },
+
     /* ================================================================
        Actions
        ================================================================ */
@@ -1029,6 +1066,14 @@ ${fonts ? '  <link rel="stylesheet" href="fonts.css">\n' : ''}  <link rel="style
                 this.showPreview(`${folder} (.zip)`, `${files.map((f) => f.path).join('\n')}\n\n── styles.css ──\n${styles.content}`);
                 if (skipped.length) Notifications.error(skippedMessage(skipped));
                 else Notifications.success(`${folder} exported`);
+            }),
+            'shadcn-all': () => this.busy('Packaging the web app kit', async () => {
+                const { folder, files, skipped, components } = await this.shadcnPackage(model);
+                this.downloadFile(createZip(files), `${folder}.zip`, 'application/zip');
+                const css = files.find((f) => f.path.endsWith('/src/index.css'));
+                this.showPreview(`${folder} (.zip)`, `${files.filter((f) => !f.path.includes('/components/ui/') && !f.path.includes('/fonts/')).map((f) => f.path).join('\n')}\n${folder}/src/components/ui/ (${components.length} components)\n\n── src/index.css ──\n${css.content}`);
+                if (skipped.length) Notifications.error(skippedMessage(skipped));
+                else Notifications.success(`${folder} exported. Unzip, then npm install and npm run dev`);
             }),
             'fonts-zip': () => this.busy('Packaging fonts', async () => {
                 if (!AppState.fonts.length) {
