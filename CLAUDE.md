@@ -6,6 +6,8 @@ TwoKit is a design-system generator (colors, surfaces, text colors, fluid type a
 - **WordPress plugin** (Bricks): `plugins/wordpress/` (PHP) + the app bundle.
 - **Figma plugin**: `plugins/figma/` (sandbox + host) + the app bundle.
 
+**Repo**: https://github.com/MahmudZar/Twokitbeta (public, branch `main`; this folder is the checkout, push over HTTPS). Live web app: https://twokit.netlify.app/ (`netlify.toml` publishes `app/`). Third-party code, old versions and exports stay local (`.gitignore`).
+
 Build both plugins: `npm install` once, then `npm run build` → `dist/` (+ the latest zip of each plugin; older zips move to `dist/archive/`). See `docs/plugins-plan.md` for the full architecture, security model and test steps. **Keep that file and this one updated with every change.**
 
 ## Rules the user set (do not break)
