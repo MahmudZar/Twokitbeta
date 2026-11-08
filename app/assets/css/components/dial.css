@@ -1,0 +1,255 @@
+/*
+ * DialKit controls (slider, segmented, switch row, button) on TwoKit colors.
+ * Geometry and motion follow DialKit 2.0 (MIT, see assets/vendor/dialkit/LICENSE).
+ * Overlays are tints of the TwoKit text color, so they read on any panel.
+ */
+
+:root {
+  --dk-surface: color-mix(in oklab, var(--text-primary-dark) 5%, transparent);
+  --dk-surface-hover: color-mix(in oklab, var(--text-primary-dark) 10%, transparent);
+  --dk-surface-active: color-mix(in oklab, var(--text-primary-dark) 11%, transparent);
+  --dk-border-hover: color-mix(in oklab, var(--text-primary-dark) 15%, transparent);
+  --dk-text: var(--text-primary-dark);
+  --dk-text-label: var(--text-secondary-dark);
+  --dk-text-quiet: var(--text-muted-dark);
+  --dk-focus: var(--focus);
+  --dk-radius: 8px;
+  --dk-row: 36px;
+  --dk-ease: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ─── Slider ─────────────────────────────────────────────── */
+
+.dk-slider-wrap {
+  position: relative;
+  block-size: var(--dk-row);
+}
+
+.dk-slider {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+  background: var(--dk-surface);
+  border-radius: var(--dk-radius);
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  outline: none;
+}
+
+.dk-slider.is-settling { transition: width 0.25s var(--dk-ease), transform 0.25s var(--dk-ease); }
+.dk-slider:focus-visible { outline: 2px solid var(--dk-focus); outline-offset: -2px; }
+
+.dk-slider__marks { position: absolute; inset: 0; pointer-events: none; }
+
+.dk-slider__mark {
+  position: absolute;
+  inset-block-start: 50%;
+  inline-size: 1px;
+  block-size: 8px;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.dk-slider__fill {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: var(--pct);
+  background: var(--dk-surface-active);
+  pointer-events: none;
+  transition: background 0.15s, inline-size 0.2s var(--dk-ease);
+}
+
+.dk-slider.is-dragging .dk-slider__fill { transition: background 0.15s; }
+
+.dk-slider__handle {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: max(5px, calc(var(--pct) - 9px));
+  inline-size: 3px;
+  block-size: 20px;
+  border-radius: 999px;
+  background: var(--dk-text);
+  opacity: 0;
+  transform: translateY(-50%) scaleX(0.25);
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.25s var(--dk-ease), inset-inline-start 0.2s var(--dk-ease);
+}
+
+.dk-slider.is-dragging .dk-slider__handle { transition: opacity 0.2s, transform 0.25s var(--dk-ease); }
+
+.dk-slider__label,
+.dk-slider__value {
+  position: absolute;
+  inset-block-start: 50%;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dk-text-label);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.dk-slider__label {
+  inset-inline-start: 10px;
+  transform: translateY(calc(-50% - 0.5px));
+  pointer-events: none;
+}
+
+.dk-slider__value {
+  inset-inline-end: 12px;
+  transform: translateY(calc(-50% + 0.5px));
+  padding-block-end: 1px;
+  border-block-end: 1px solid transparent;
+  font-family: var(--font-mono);
+  cursor: default;
+}
+
+.dk-slider__value.is-editable { border-block-end-color: var(--dk-text-label); cursor: text; }
+
+.dk-slider__input {
+  position: absolute;
+  inset-inline-end: 12px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  inline-size: 6ch;
+  padding: 0 0 1px;
+  background: transparent;
+  border: 0;
+  border-block-end: 1px solid var(--dk-text-label);
+  color: var(--dk-text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: end;
+  outline: none;
+}
+
+.dk-slider.is-hovered .dk-slider__mark,
+.dk-slider.is-interacting .dk-slider__mark { background: var(--dk-border-hover); }
+
+.dk-slider.is-hovered .dk-slider__fill,
+.dk-slider.is-interacting .dk-slider__fill,
+.dk-slider:focus-visible .dk-slider__fill { background: var(--dk-border-hover); }
+
+.dk-slider.is-hovered .dk-slider__value,
+.dk-slider.is-interacting .dk-slider__value,
+.dk-slider:focus-visible .dk-slider__value { color: var(--dk-text); }
+
+.dk-slider.is-hovered .dk-slider__handle,
+.dk-slider.is-interacting .dk-slider__handle { opacity: 0.5; transform: translateY(-50%) scaleX(1); }
+
+.dk-slider.is-dragging .dk-slider__handle { opacity: 0.9; }
+
+.dk-slider.is-dodging.is-hovered .dk-slider__handle,
+.dk-slider.is-dodging.is-interacting .dk-slider__handle { opacity: 0.1; transform: translateY(-50%) scaleX(1) scaleY(0.75); }
+
+/* ─── Segmented control ──────────────────────────────────── */
+
+.dk-segmented {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--count), minmax(0, 1fr));
+  padding: 2px;
+  border-radius: var(--dk-radius);
+}
+
+.dk-segmented__pill {
+  position: absolute;
+  inset-block: 2px;
+  inset-inline-start: 2px;
+  inline-size: calc((100% - 4px) / var(--count));
+  transform: translateX(calc(var(--index) * 100%));
+  background: var(--dk-surface-active);
+  border-radius: 6px;
+  pointer-events: none;
+  transition: transform 0.2s var(--dk-ease);
+}
+
+.dk-segmented__btn {
+  position: relative;
+  z-index: 1;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dk-text-label);
+  white-space: nowrap;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+
+.dk-segmented__btn:hover { color: var(--dk-text); }
+.dk-segmented__btn[aria-checked="true"] { color: var(--dk-text); }
+.dk-segmented__btn:focus-visible { outline: 2px solid var(--dk-focus); outline-offset: -2px; }
+
+.setting-group__actions .dk-segmented,
+.preview-header .dk-segmented,
+.example__bar .dk-segmented { background: var(--dk-surface); }
+
+.setting-group__actions .dk-segmented__btn { padding: 4px 9px; font-size: 12px; }
+
+/* ─── Labeled row (toggle / choice) ──────────────────────── */
+
+.dk-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-block-size: var(--dk-row);
+  padding: 2px 4px 2px 12px;
+  background: var(--dk-surface);
+  border-radius: var(--dk-radius);
+}
+
+.dk-row__label {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 17px;
+  color: var(--dk-text-label);
+}
+
+.dk-row .dk-segmented { flex: none; }
+
+.dk-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dk-stack > .dk-slider-wrap,
+.dk-stack > .dk-segmented,
+.dk-stack > .dk-button { inline-size: 100%; }
+
+.dk-segmented--none .dk-segmented__pill { opacity: 0; }
+
+.dk-hint {
+  padding-inline: 2px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--dk-text-quiet);
+}
+
+/* ─── Buttons ────────────────────────────────────────────── */
+
+.dk-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dk-text-label);
+  background: var(--dk-surface);
+  border-radius: var(--dk-radius);
+  transition: background 0.15s, color 0.15s;
+}
+
+.dk-button:hover { background: var(--dk-surface-hover); color: var(--dk-text); }
+.dk-button:active { background: var(--dk-surface-active); }
+.dk-button:focus-visible { outline: 2px solid var(--dk-focus); outline-offset: -2px; }
+.dk-button svg { inline-size: 16px; block-size: 16px; flex: none; }

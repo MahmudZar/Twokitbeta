@@ -1,0 +1,77 @@
+/* Viewport: a preview at a device width, scaled to fit its pane (ui/viewport.js). */
+
+.vp {
+  position: relative;
+  flex: 1;
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+/* The scaled element. viewport.js sets its width, height, transform and centering margin. */
+.vp > * {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  transform-origin: 0 0;
+}
+
+/* Device widths: a darker backdrop so the page edges read as the device edges. */
+.vp.is-device {
+  background: var(--surface-primary-dark);
+}
+
+.vp.is-device > * {
+  box-shadow: 0 0 0 1px var(--surface-border-elevated-dark);
+}
+
+.vp-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-inline-size: 0;
+}
+
+.vp-controls .dk-segmented { inline-size: auto; flex: none; }
+.vp-controls .dk-segmented__btn { padding-inline: 10px; white-space: nowrap; }
+
+.vp-controls__width {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  block-size: 28px;
+  padding-inline: 8px;
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 6px;
+  background: var(--surface-primary-dark);
+  color: var(--text-secondary-dark);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  cursor: text;
+  transition: border-color 0.18s ease;
+}
+
+.vp-controls__width:hover { border-color: var(--surface-border-elevated-dark); }
+.vp-controls__width:focus-within { border-color: var(--primary-700); }
+
+.vp-controls__width input {
+  inline-size: 5ch;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary-dark);
+  font: inherit;
+  text-align: end;
+}
+
+.vp-controls__width input::placeholder { color: var(--text-secondary-dark); }
+
+.vp-controls__scale {
+  min-inline-size: 11ch;
+  color: var(--text-secondary-dark);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

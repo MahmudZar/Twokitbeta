@@ -1,0 +1,575 @@
+/* Control panel: setting groups, panels, options, steppers, inputs, toggles, prefix. */
+
+.control__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  /* At least the panel's height, and grows with its content (so the padding below lands
+     after the last item instead of behind overflowing content). */
+  flex: 1 0 auto;
+  min-block-size: 100%;
+  /* Room below the last group (or button), so it doesn't touch the bottom edge when scrolled
+     to the end. On the stack, not the groups: groups are already spaced by the gap, and
+     border-box keeps short panels from scrolling. */
+  padding-block-end: var(--space-32);
+}
+
+.control__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+}
+
+.setting-group__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-10);
+}
+
+.setting-group__title {
+  font-size: var(--text-16);
+  font-weight: 600;
+  color: var(--text-primary-dark);
+  margin-inline-end: auto;
+}
+
+.setting-group__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  padding: 19px 10px;
+  background: var(--surface-secondary-dark);
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 4px;
+}
+
+.panel__corner {
+  position: absolute;
+  inset-block-start: var(--space-8);
+  inset-inline-end: var(--space-8);
+}
+
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-14);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-8);
+  border-radius: 5px;
+  background: rgba(15, 52, 19, 0.65);
+  color: var(--primary-500);
+  font-size: var(--text-12);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* Option row: label + control. */
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+}
+
+.option__label {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  font-size: 13px;
+  color: var(--text-secondary-dark);
+}
+
+/* One fixed track for every control (text, select, stepper, unit), so a row's
+   control never sizes to its content: they all line up at the same width. */
+.option__control {
+  --option-control-size: 12.5rem;
+  display: flex;
+  align-items: center;
+  flex: 0 1 var(--option-control-size);
+  min-inline-size: 0;
+}
+
+.option__control > * {
+  flex: 1 1 auto;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.option__control > .text-input,
+.option__control > .stepper,
+.option__control > .unit-input { min-block-size: 36px; }
+
+.option__control .stepper__input,
+.option__control .unit-input input {
+  flex: 1 1 auto;
+  inline-size: auto;
+  min-inline-size: 0;
+}
+
+.option__control .unit-input input,
+.option__control .stepper__btn,
+.option__control .stepper__input { block-size: 34px; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* Stepper. */
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-primary-dark);
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.stepper__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 30px;
+  block-size: 32px;
+  color: var(--text-secondary-dark);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.stepper__btn:hover { background: var(--surface-elevated-dark); color: var(--text-primary-dark); }
+.stepper__btn svg { inline-size: 12px; block-size: 12px; }
+
+.stepper__input {
+  inline-size: 7.5ch;
+  block-size: 32px;
+  text-align: center;
+  color: var(--text-primary-dark);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  border-inline: 1px solid var(--surface-border-secondary-dark);
+  background: transparent;
+}
+
+.stepper__input::-webkit-outer-spin-button,
+.stepper__input::-webkit-inner-spin-button,
+.unit-input input::-webkit-outer-spin-button,
+.unit-input input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.stepper__input,
+.unit-input input {
+  appearance: textfield;
+}
+
+/* Text / unit / select inputs. */
+.text-input {
+  min-block-size: 34px;
+  inline-size: 100%;
+  padding: var(--space-6) var(--space-10);
+  background: var(--surface-primary-dark);
+  border: 1px solid var(--surface-border-elevated-dark);
+  border-radius: 6px;
+  color: var(--text-primary-dark);
+  font-size: 13px;
+}
+
+.text-input--mono { font-family: var(--font-mono); }
+.text-input--area { resize: vertical; min-block-size: 76px; }
+.text-input:focus-visible { border-color: var(--primary-700); outline: none; }
+
+.unit-input {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-primary-dark);
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.unit-input input {
+  inline-size: 8ch;
+  block-size: 30px;
+  padding-inline: var(--space-8);
+  text-align: end;
+  color: var(--text-primary-dark);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.unit-input--wide input { inline-size: 8ch; }
+
+.unit-input__unit {
+  padding-inline: var(--space-8);
+  color: var(--text-muted-dark);
+  font-size: var(--text-12);
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-secondary-dark);
+}
+
+/* Toggle switch. */
+.toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle input {
+  position: absolute;
+  opacity: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Ratio block (steps + label). */
+.ratio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-block: var(--space-6);
+}
+
+.panel .choices {
+  inline-size: 100%;
+}
+
+.ratio__label {
+  font-size: 13px;
+  color: var(--text-secondary-dark);
+}
+
+/* Variable table: `--token` column + control cell (headings, section padding, gaps, widths). */
+.var-table {
+  display: grid;
+  /* Name column hugs short tokens; long ones wrap at hyphens past --name-max. */
+  grid-template-columns: fit-content(var(--name-max, 40%)) minmax(0, 1fr);
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.var-row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  min-block-size: 50px;
+}
+
+.var-row + .var-row { border-block-start: 1px solid var(--surface-border-secondary-dark); }
+
+.var-row__name {
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-10);
+  border-inline-end: 1px solid var(--surface-border-secondary-dark);
+  font-family: var(--font-mono);
+  min-inline-size: 4.25rem;
+  padding-block: var(--space-6);
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--text-secondary-dark);
+}
+
+.var-row__cell {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8);
+}
+
+.var-row__cell .switcher { inline-size: 100%; min-inline-size: 0; }
+
+.var-row__meta {
+  justify-self: end;
+  padding-inline-end: var(--space-4);
+  font-size: var(--text-12);
+  color: var(--text-secondary-dark);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Tagged number field: green "Max"/"Min" tab + value with inline unit. */
+.num-field {
+  display: flex;
+  align-items: stretch;
+  min-inline-size: 0;
+  block-size: 34px;
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: text;
+  transition: border-color 0.18s ease;
+}
+
+.num-field:hover { border-color: var(--surface-border-elevated-dark); }
+.num-field:focus-within { border-color: var(--primary-700); }
+
+.num-field__tag {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--space-6);
+  background: rgba(15, 52, 19, 0.65);
+  border-inline-end: 1px solid var(--surface-border-secondary-dark);
+  color: var(--primary-500);
+  font-size: 13px;
+}
+
+.num-field__box {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 0;
+  gap: var(--space-4);
+  padding-inline: var(--space-6);
+  background: var(--surface-primary-dark);
+  font-size: 13px;
+  color: var(--text-secondary-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.num-field__box input {
+  field-sizing: content;
+  min-inline-size: 2ch;
+  max-inline-size: 100%;
+  padding: 0;
+  background: transparent;
+  color: var(--text-primary-dark);
+  font: inherit;
+  text-align: end;
+  outline: none;
+}
+
+.num-field__unit { color: var(--text-muted-dark); }
+
+/* Color field (base color picker + value + mode). */
+.color-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.color-field__swatch {
+  position: relative;
+  inline-size: 26px;
+  block-size: 26px;
+  border-radius: 50%;
+  background: var(--swatch);
+  border: 2px solid var(--white);
+  flex: none;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.color-field__swatch[aria-expanded="true"] {
+  box-shadow: 0 0 0 2px var(--surface-main-dark), 0 0 0 4px var(--primary-500);
+}
+
+pretty-color-picker.app-color-picker {
+  z-index: 120;
+}
+
+.color-field__value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  min-inline-size: 0;
+  gap: var(--space-8);
+  padding: var(--space-4) var(--space-8) var(--space-4) var(--space-12);
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 4px;
+  transition: border-color 0.18s ease;
+}
+
+.color-field__value:focus-within { border-color: var(--surface-border-elevated-dark); }
+
+.color-field__value input {
+  flex: 1;
+  min-inline-size: 0;
+  color: var(--text-primary-dark);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: transparent;
+}
+
+.color-field__mode {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--text-secondary-dark);
+  text-transform: uppercase;
+  font-size: var(--text-12);
+  letter-spacing: 0.04em;
+}
+
+.color-field__mode svg { inline-size: 14px; block-size: 14px; }
+.color-field__mode--static { pointer-events: none; }
+
+/* Palette card. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-14);
+  padding: var(--space-14);
+  background: var(--surface-secondary-dark);
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 6px;
+}
+
+.card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-10);
+}
+
+.card__title,
+.card__title-input {
+  font-size: var(--text-14);
+  font-weight: 500;
+  color: var(--text-primary-dark);
+}
+
+.card__title-input {
+  flex: 1;
+  min-inline-size: 0;
+  padding: var(--space-4) var(--space-6);
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.card__title-input:hover:not([readonly]) { border-color: var(--surface-border-secondary-dark); }
+.card__title-input:focus-visible { border-color: var(--surface-border-elevated-dark); outline: none; background: var(--surface-primary-dark); }
+.card__title-input[readonly] { cursor: default; }
+
+.card__actions { display: inline-flex; align-items: center; gap: var(--space-6); }
+
+.swatch-dot {
+  display: inline-block;
+  inline-size: 16px;
+  block-size: 16px;
+  border-radius: 4px;
+  flex: none;
+  vertical-align: middle;
+  margin-inline-end: var(--space-8);
+}
+
+/* Shade strip. */
+.strip {
+  display: flex;
+  min-block-size: 30px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.strip__stop { flex: 1; block-size: 30px; }
+
+.hint { font-size: var(--text-12); color: var(--text-muted-dark); }
+.hint code { font-family: var(--font-mono); color: var(--text-secondary-dark); }
+
+.summary-list { display: flex; flex-direction: column; }
+
+.summary-list div {
+  display: flex;
+  justify-content: space-between;
+  padding-block: var(--space-8);
+  border-bottom: 1px solid var(--surface-border-secondary-dark);
+  font-size: 13px;
+  color: var(--text-secondary-dark);
+}
+
+.summary-list strong { color: var(--text-primary-dark); font-family: var(--font-mono); }
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  min-block-size: 160px;
+  inline-size: 100%;
+  border: 2px dashed var(--surface-border-secondary-dark);
+  border-radius: 8px;
+  color: var(--text-secondary-dark);
+  background: var(--surface-secondary-dark);
+  text-align: center;
+  padding: var(--space-20);
+}
+
+.dropzone.is-hot { border-color: var(--primary-500); color: var(--text-primary-dark); }
+.dropzone strong { color: var(--text-primary-dark); }
+
+/* Tailwind family picker (portaled to body). */
+.tw-picker {
+  position: fixed;
+  z-index: 90;
+  display: grid;
+  grid-template-columns: max-content max-content;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(13, auto);
+  column-gap: var(--space-32);
+  row-gap: var(--space-10);
+  padding: var(--space-20) var(--space-24);
+  background: var(--surface-main-dark);
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 10px;
+  box-shadow: 0 18px 40px oklch(0 0 0 / 0.45);
+}
+
+.tw-picker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-10);
+  min-block-size: 22px;
+  padding: 0;
+  color: var(--text-primary-dark);
+  font-size: var(--text-14);
+  font-weight: 400;
+  letter-spacing: 0;
+  white-space: nowrap;
+  border-radius: 4px;
+}
+
+.tw-picker__item:hover,
+.tw-picker__item:focus-visible {
+  color: var(--white);
+}
+
+.tw-picker__item:focus-visible {
+  outline: 1px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.tw-picker__dot {
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 50%;
+  flex: none;
+  box-shadow: inset 0 0 0 1px oklch(100% 0 0 / 0.08);
+}

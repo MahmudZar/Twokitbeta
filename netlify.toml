@@ -1,0 +1,4 @@
+# The web app is plain ES modules: no build, Netlify serves app/ as it is.
+[build]
+  publish = "app"
+  command = ""

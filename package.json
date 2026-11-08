@@ -1,0 +1,17 @@
+{
+  "name": "twokit",
+  "version": "1.0.26",
+  "private": true,
+  "description": "TwoKit: the web app (app/), the WordPress plugin and the Figma plugin (plugins/), built from one source.",
+  "license": "GPL-2.0-or-later",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:wordpress": "node scripts/build.mjs wordpress",
+    "build:figma": "node scripts/build.mjs figma",
+    "check:picker": "node scripts/check-picker-catalog.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

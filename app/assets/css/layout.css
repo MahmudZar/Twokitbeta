@@ -1,0 +1,223 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  block-size: 100dvh;
+  overflow: hidden;
+  background: var(--surface-main-dark);
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--space-14);
+  padding-inline: var(--space-20);
+  background: var(--surface-primary-dark);
+  border-bottom: 1px solid var(--surface-border-secondary-dark);
+  flex: none;
+}
+
+.header__intro {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-16);
+  min-inline-size: 0;
+}
+
+.header__logo {
+  block-size: 24px;
+  inline-size: auto;
+}
+
+.header__separator {
+  inline-size: 1px;
+  block-size: 25px;
+  background: var(--surface-border-elevated-dark);
+  flex: none;
+}
+
+.project-name {
+  padding: 0.2lh 1ch;
+  background: var(--surface-secondary-dark);
+  color: var(--text-primary-dark);
+  border-radius: 4px;
+  border: 1px solid var(--surface-border-primary-dark);
+  min-inline-size: 12ch;
+  max-inline-size: 28ch;
+  transition: border-color 0.2s ease;
+}
+
+.project-name:hover,
+.project-name:focus {
+  border-color: var(--surface-border-secondary-dark);
+}
+
+.header__actions {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-s);
+  align-items: center;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-block-size: 0;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: row;
+  inline-size: min(620px, 48vw);
+  min-inline-size: 720px;
+  background: var(--surface-primary-dark);
+  min-block-size: 0;
+  border-inline-end: 1px solid var(--surface-border-secondary-dark);
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  padding-inline: var(--space-20);
+  padding-block: var(--space-24);
+  inline-size: 210px;
+  flex: none;
+  border-inline-end: 1px solid var(--surface-border-secondary-dark);
+  min-block-size: 0;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.nav__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.nav__separator {
+  block-size: 1px;
+  background: var(--surface-border-elevated-dark);
+}
+
+.menu__collapse {
+  margin-block-start: auto;
+}
+
+.control,
+.preview__body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-border-elevated-dark) transparent;
+}
+
+.control::-webkit-scrollbar,
+.preview__body::-webkit-scrollbar {
+  inline-size: 4px;
+}
+
+.control::-webkit-scrollbar-thumb,
+.preview__body::-webkit-scrollbar-thumb {
+  background: var(--surface-border-elevated-dark);
+  border-radius: 999px;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: auto;
+  padding: var(--space-24) var(--space-16) var(--space-16);
+}
+
+.preview {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 0;
+  padding: var(--space-10);
+  display: flex;
+}
+
+.preview__inner {
+  flex: 1;
+  min-block-size: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-primary-dark);
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  min-block-size: 53px;
+  padding: var(--space-10) var(--space-12);
+  background: var(--surface-secondary-dark);
+  border-block-end: 1px solid var(--surface-border-secondary-dark);
+  flex: none;
+}
+
+.preview-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.preview__body {
+  flex: 1;
+  min-block-size: 0;
+  overflow: auto;
+  padding: var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.app.is-collapsed .menu {
+  inline-size: 76px;
+  padding-inline: var(--space-12);
+}
+
+.app.is-collapsed .nav__label,
+.app.is-collapsed .menu__collapse .nav__label {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.app.is-collapsed .sidebar {
+  inline-size: min(460px, 42vw);
+}
+
+@media (max-width: 1100px) {
+  .sidebar {
+    inline-size: min(100%, 420px);
+  }
+
+  .menu {
+    inline-size: 72px;
+    padding-inline: var(--space-10);
+  }
+
+  .nav__label {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+}

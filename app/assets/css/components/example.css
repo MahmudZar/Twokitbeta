@@ -1,0 +1,41 @@
+/* Example preview mode: a framed, non-live website built from the exported CSS. */
+
+.example {
+  flex: 1;
+  min-block-size: 520px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-secondary-dark);
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.example__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-10);
+  padding: 6px 6px 6px var(--space-16);
+  border-block-end: 1px solid var(--surface-border-elevated-dark);
+}
+
+.example__title {
+  font-size: var(--text-14);
+  font-weight: 500;
+  color: var(--text-primary-dark);
+}
+
+.example__bar .dk-segmented { inline-size: 168px; }
+/* Website · Blog · Style guide: sized by its labels, never squeezed. */
+.example__bar .dk-segmented[data-key="example-kind"] { inline-size: auto; flex: none; }
+.example__bar .dk-segmented[data-key="example-kind"] .dk-segmented__btn { padding-inline: 10px; white-space: nowrap; }
+.example__bar .dk-segmented[data-key="example-theme"] { margin-inline-start: auto; inline-size: 148px; }
+/* Device width controls sit in the middle of the bar */
+.example__bar .vp-controls { margin-inline-start: auto; }
+.example__bar .dk-segmented__btn { padding-block: 5px; font-size: 12px; }
+
+.example__frame {
+  border: 0;
+  background: transparent;
+}

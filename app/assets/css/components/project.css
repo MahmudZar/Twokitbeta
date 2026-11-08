@@ -1,0 +1,161 @@
+/* Project screen (Figma: "Project - screen"). Shares the Export screen's panel,
+   head, section, divider, tile and footer styles (export.css). */
+
+/* ─── Control: details form + danger zone ───────────────── */
+
+.pj-details { display: flex; flex-direction: column; gap: var(--space-24); }
+.pj-form { display: flex; flex-direction: column; gap: var(--space-20); padding-inline: var(--space-4); }
+.pj-field { display: flex; flex-direction: column; gap: var(--space-8); }
+.pj-label { font-size: 13px; font-weight: 500; line-height: 1.3; color: var(--text-secondary-dark); }
+.pj-hint { font-size: 12px; line-height: 1.3; color: var(--text-muted-dark); }
+.pj-input {
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: 0 var(--space-14);
+  border: 1px solid var(--surface-border-elevated-dark);
+  border-radius: 10px;
+  background: var(--surface-main-dark);
+  color: var(--text-primary-dark);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.18s ease;
+}
+.pj-input::placeholder { color: var(--text-muted-dark); opacity: 1; }
+.pj-input:hover { border-color: var(--grey-600); }
+.pj-input:focus { border-color: var(--primary-500); outline: none; }
+.pj-input:focus-visible { box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary-500) 22%, transparent); }
+.pj-input--area { min-block-size: 140px; padding-block: var(--space-12); line-height: 1.45; resize: vertical; }
+
+.pj-danger {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-14);
+  padding: var(--space-16);
+  border: 1px solid color-mix(in oklab, var(--danger) 25%, transparent);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--danger) 6%, transparent);
+}
+.pj-danger__head { display: flex; align-items: center; gap: var(--space-10); color: var(--danger); }
+.pj-danger__head h3 { font-size: 14px; font-weight: 600; line-height: 1.3; color: var(--text-primary-dark); }
+.pj-danger p { font-size: 12px; line-height: 1.35; color: var(--text-muted-dark); }
+.pj-danger__btn {
+  min-block-size: 40px;
+  border: 1px solid color-mix(in oklab, var(--danger) 45%, transparent);
+  border-radius: 8px;
+  color: var(--danger);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.18s ease;
+}
+.pj-danger__btn:hover { background: color-mix(in oklab, var(--danger) 12%, transparent); }
+.pj-danger__btn:focus-visible { outline: 2px solid var(--danger); outline-offset: 2px; }
+
+/* ─── Panel ─────────────────────────────────────────────── */
+
+.pj-status {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-12) var(--space-6) var(--space-10);
+  border: 1px solid color-mix(in oklab, var(--primary-500) 30%, transparent);
+  border-radius: 999px;
+  background: var(--primary-900);
+  color: var(--primary-500);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.pj-status--error { border-color: color-mix(in oklab, var(--danger) 40%, transparent); background: color-mix(in oklab, var(--danger) 12%, transparent); color: var(--danger); }
+
+.pj-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-10); }
+.pj-tile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  min-inline-size: 0;
+  padding: var(--space-14);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--surface-secondary-dark);
+  text-align: start;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.pj-tile:hover { border-color: var(--surface-border-elevated-dark); background: var(--surface-elevated-dark); }
+.pj-tile:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.pj-tile__text { display: flex; flex: 1; flex-direction: column; gap: 2px; min-inline-size: 0; }
+.pj-tile__text b { overflow: hidden; font-size: 18px; font-weight: 600; line-height: 1.3; color: var(--text-primary-dark); font-variant-numeric: tabular-nums; text-overflow: ellipsis; white-space: nowrap; }
+.pj-tile__text b.is-empty { color: var(--text-muted-dark); }
+.pj-tile__text small { font-size: 12px; line-height: 1.3; color: var(--text-muted-dark); }
+.pj-tile__chev { display: inline-flex; flex: none; color: var(--text-muted-dark); transition: transform 0.18s ease, color 0.18s ease; }
+.pj-tile:hover .pj-tile__chev { color: var(--text-primary-dark); transform: translateX(2px); }
+
+.pj-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-12);
+  min-block-size: 210px;
+  padding: var(--space-32) var(--space-24);
+  border: 1px dashed var(--surface-border-elevated-dark);
+  border-radius: 12px;
+  background: var(--surface-main-dark);
+  text-align: center;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.pj-drop.is-hot { border-color: var(--primary-500); background: color-mix(in oklab, var(--primary-500) 6%, var(--surface-main-dark)); }
+.pj-drop__icon { display: grid; place-items: center; inline-size: 44px; block-size: 44px; border: 1px solid var(--surface-border-elevated-dark); border-radius: 10px; background: var(--surface-secondary-dark); color: var(--text-secondary-dark); }
+.pj-drop.is-hot .pj-drop__icon { color: var(--primary-500); }
+.pj-drop__text { display: flex; flex-direction: column; gap: var(--space-4); }
+.pj-drop__text b { font-size: 15px; font-weight: 600; line-height: 1.3; color: var(--text-primary-dark); }
+.pj-drop__text small { font-size: 13px; line-height: 1.3; color: var(--text-muted-dark); }
+.pj-browse {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-block-size: 36px;
+  padding-inline: var(--space-16);
+  border: 1px solid var(--surface-border-elevated-dark);
+  border-radius: 8px;
+  background: var(--surface-secondary-dark);
+  color: var(--text-primary-dark);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.18s ease;
+}
+.pj-browse svg { color: var(--text-secondary-dark); }
+.pj-browse:hover { background: var(--surface-elevated-dark); }
+.pj-browse:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.pj-kbd { padding: 3px 8px; border-radius: 6px; background: color-mix(in oklab, var(--primary-950) 14%, transparent); color: var(--primary-950); font: inherit; font-size: 12px; font-weight: 600; }
+
+@media (max-width: 1280px) { .pj-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Import dialog (header Import, Project → Browse): one drop zone, no surprises. */
+.pj-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: var(--space-24);
+  background: rgb(0 0 0 / 0.6);
+}
+.pj-modal__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  inline-size: min(520px, 100%);
+  padding: var(--space-24);
+  border-radius: 14px;
+  border: 1px solid var(--surface-border-secondary-dark);
+  background: var(--surface-primary-dark);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 0.5);
+}
+.pj-modal__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); }
+.pj-modal__head h2 { font-size: 18px; font-weight: 600; color: var(--text-primary-dark); }
+.pj-modal__close { inline-size: 28px; block-size: 28px; border-radius: 6px; font-size: 18px; line-height: 1; color: var(--text-muted-dark); }
+.pj-modal__close:hover { color: var(--text-primary-dark); background: var(--surface-secondary-dark); }
+.pj-modal__text { font-size: 13px; line-height: 1.5; color: var(--text-muted-dark); }
+.pj-modal__text b { color: var(--text-secondary-dark); font-weight: 500; }

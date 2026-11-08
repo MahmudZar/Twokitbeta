@@ -1,0 +1,165 @@
+/* RangeField: labelled slider row (ui/rangeField.js). --p is the value as 0–1. */
+
+.rf {
+  --thumb: 16px;
+  --at-px: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--p));
+  display: grid;
+  gap: var(--space-8);
+}
+
+.rf__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  min-inline-size: 0;
+}
+
+.rf__label {
+  flex: 1;
+  min-inline-size: 0;
+  color: var(--text-secondary-dark);
+  font-size: 13px;
+}
+
+.rf__chip {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--surface-elevated-dark);
+  color: var(--text-secondary-dark);
+  font-size: var(--text-12);
+  white-space: nowrap;
+}
+
+.rf__fx {
+  inline-size: 30px;
+  block-size: 30px;
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 6px;
+  background: var(--surface-primary-dark);
+  color: var(--text-muted-dark);
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  font-style: italic;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.rf__fx:hover { border-color: var(--surface-border-elevated-dark); color: var(--text-primary-dark); }
+.rf__fx[aria-pressed="true"] { border-color: var(--primary-700); background: color-mix(in oklab, var(--primary-900) 55%, transparent); color: var(--primary-400); }
+
+.rf__num {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  block-size: 30px;
+  padding-inline: 8px;
+  border: 1px solid var(--surface-border-secondary-dark);
+  border-radius: 6px;
+  background: var(--surface-primary-dark);
+  color: var(--text-muted-dark);
+  font-size: var(--text-12);
+  cursor: text;
+  transition: border-color 0.15s;
+}
+.rf__num:hover { border-color: var(--surface-border-elevated-dark); }
+.rf__num:focus-within { border-color: var(--primary-700); }
+.rf__num input {
+  inline-size: 6ch;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary-dark);
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+.rf.is-fx .rf__num { opacity: 0.6; cursor: default; }
+
+/* Track: the grey line and ticks sit behind a transparent native range */
+.rf__track {
+  position: relative;
+  block-size: 20px;
+}
+.rf__track::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 50%;
+  block-size: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--primary-500) var(--at-px), var(--surface-elevated-dark) var(--at-px));
+  translate: 0 -50%;
+}
+.rf__tick {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--at));
+  inline-size: 1px;
+  block-size: 8px;
+  background: var(--surface-border-elevated-dark);
+  translate: -50% -50%;
+}
+
+.rf__range {
+  position: relative;
+  inline-size: 100%;
+  block-size: 20px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.rf__range:focus { outline: none; }
+.rf__range::-webkit-slider-runnable-track { block-size: 20px; background: transparent; }
+.rf__range::-moz-range-track { block-size: 20px; background: transparent; }
+.rf__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  inline-size: var(--thumb);
+  block-size: var(--thumb);
+  margin-block-start: 2px;
+  border: 3px solid var(--primary-500);
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.rf__range::-moz-range-thumb {
+  box-sizing: border-box;
+  inline-size: var(--thumb);
+  block-size: var(--thumb);
+  border: 3px solid var(--primary-500);
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+}
+.rf__range:hover::-webkit-slider-thumb,
+.rf__range:active::-webkit-slider-thumb { transform: scale(1.12); }
+.rf__range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary-500) 35%, transparent); }
+.rf__range:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary-500) 35%, transparent); }
+
+/* Mark labels under the track, centered on their tick; the end labels hug the edges */
+.rf__scale {
+  position: relative;
+  block-size: 16px;
+  color: var(--text-muted-dark);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.rf__mark {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--at));
+  translate: -50% 0;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+.rf__mark--start { inset-inline-start: 0; translate: 0 0; }
+.rf__mark--end { inset-inline-start: auto; inset-inline-end: 0; translate: 0 0; }
+.rf__mark.is-on { color: var(--text-primary-dark); }
+
+.rf__formula { display: grid; }
+.rf__formula .text-input,
+.rf__formula input { inline-size: 100%; }
+

@@ -1,0 +1,67 @@
+/* App chrome tokens, taken from variables.json (TwoKit design system). */
+
+:root {
+  --white: #ffffff;
+  --black: #000000;
+
+  --primary-400: #8bf094;
+  --primary-500: #5fea6d;
+  --primary-700: #2f8a39;
+  --primary-800: #226b2a;
+  --primary-900: #17491d;
+  --primary-950: #08240b; /* ink on --primary-500 (export button) */
+
+  --grey-1000: #131515;
+  --grey-950: #181a1a;
+  --grey-900: #1f2121;
+  --grey-850: #272929;
+  --grey-800: #2f3232;
+  --grey-750: #393c3c;
+  --grey-700: #444747;
+  --grey-650: #505454;
+  --grey-600: #5d6262;
+  --grey-500: #777d7d;
+  --grey-450: #858b8b;
+  --grey-400: #939a9a;
+  --grey-350: #a1a9a9;
+  --grey-300: #afb8b8;
+  --grey-50: #edf9f9;
+
+  --surface-main-dark: var(--grey-1000);
+  --surface-primary-dark: var(--grey-900);
+  --surface-secondary-dark: var(--grey-850);
+  --surface-elevated-dark: var(--grey-750);
+  --surface-border-primary-dark: var(--grey-800);
+  --surface-border-secondary-dark: var(--grey-750);
+  --surface-border-elevated-dark: var(--grey-650);
+
+  --text-primary-dark: var(--grey-50);
+  --text-secondary-dark: var(--grey-300);
+  --text-muted-dark: var(--grey-450);
+
+  --space-2: 0.125rem;
+  --space-4: 0.25rem;
+  --space-6: 0.375rem;
+  --space-8: 0.5rem;
+  --space-10: 0.625rem;
+  --space-12: 0.75rem;
+  --space-14: 0.875rem;
+  --space-16: 1rem;
+  --space-18: 1.125rem;
+  --space-20: 1.25rem;
+  --space-24: 1.5rem;
+  --space-32: 2rem;
+  --space-48: 3rem;
+  --space-s: clamp(1rem, 0.9286rem + 0.3571vw, 1.25rem);
+
+  --text-12: 0.75rem;
+  --text-14: 0.875rem;
+  --text-16: 1rem;
+  --text-26: 1.625rem;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+
+  --focus: var(--primary-500);
+  --danger: #f87171; /* destructive actions (Project → Reset) */
+}

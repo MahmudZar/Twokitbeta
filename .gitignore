@@ -1,6 +1,21 @@
 node_modules/
 dist/
-build/
+test-results/
+
+# Local only: third-party code, old versions, exports and scratch material (the repo is public)
+/External app/
+/Old twokit/
+/Bricks export/
+/Figma screen/
+/Images/
+/Style guide Previews/
+/Text files/
+/Wayward twokit/
+/fancy-framework-*.zip
+/variables.json
+/.claude/
+/.vscode/
+
 .env
 .env.*
 *.log

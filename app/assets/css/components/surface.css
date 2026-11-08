@@ -1,0 +1,295 @@
+/* Surface screen: the light/dark hierarchy stages. */
+
+/* ─── Stages ────────────────────────────────────────────────────────────── */
+
+.sp-stages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-10);
+  padding: var(--space-10);
+}
+
+@media (max-width: 1280px) {
+  .sp-stages { grid-template-columns: 1fr; }
+}
+
+.sp-stage {
+  position: relative;
+  color-scheme: light;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.sp-stage[data-mode="dark"] { color-scheme: dark; }
+
+.sp-stage__label {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline-end: 14px;
+  z-index: 1;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sp-stage__canvas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 36px;
+  min-block-size: 700px;
+  padding: 52px 32px 32px;
+  border-radius: 8px;
+  background-color: var(--page);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+
+.sp-s-0 { background-color: var(--surface-0); }
+.sp-s-1 { background-color: var(--surface-1); }
+.sp-s-2 { background-color: var(--surface-2); }
+.sp-s-3 { background-color: var(--surface-3); }
+.sp-s-4 { background-color: var(--surface-4); }
+.sp-s-5 { background-color: var(--surface-5); }
+.sp-s-6 { background-color: var(--surface-6); }
+.sp-s-7 { background-color: var(--surface-7); }
+.sp-s-8 { background-color: var(--surface-8); }
+.sp-e-1 { box-shadow: var(--shadow-1); }
+.sp-e-2 { box-shadow: var(--shadow-2); }
+.sp-e-3 { box-shadow: var(--shadow-3); }
+.sp-e-4 { box-shadow: var(--shadow-4); }
+.sp-e-5 { box-shadow: var(--shadow-5); }
+.sp-e-6 { box-shadow: var(--shadow-6); }
+.sp-e-7 { box-shadow: var(--shadow-7); }
+.sp-e-8 { box-shadow: var(--shadow-8); }
+
+.sp-lvl {
+  position: absolute;
+  inset-block-start: 6px;
+  inset-inline-end: 8px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  pointer-events: none;
+}
+
+.sp-lvl--inline { position: static; margin-inline-end: 6px; }
+
+/* Card */
+
+.sp-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  inline-size: min(100%, 352px);
+  min-block-size: 330px;
+  padding: 22px 18px 18px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+}
+
+.edge-shadow .sp-card { border-color: transparent; box-shadow: var(--shadow-2); }
+
+.sp-card__title { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; color: var(--text-primary); }
+.sp-card__body { color: var(--text-secondary); font-size: 14px; line-height: 1.45; }
+.sp-card__meta { color: var(--text-muted); font-size: 12px; }
+.sp-card__actions { display: flex; align-items: center; gap: 8px; margin-block-start: auto; }
+
+.sp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-block-size: 29px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sp-btn svg { inline-size: 12px; block-size: 12px; }
+.sp-btn:hover { background-image: linear-gradient(var(--hover), var(--hover)); }
+.sp-btn:active { background-image: linear-gradient(var(--active), var(--active)); }
+.sp-btn:disabled { color: var(--text-disabled); background-image: none; cursor: not-allowed; }
+.sp-btn--ghost { border-color: transparent; color: var(--text-secondary); font-weight: 500; }
+.sp-btn--ghost:hover { color: var(--text-primary); }
+
+/* Popovers */
+
+.sp-pop-host { position: relative; }
+
+.sp-pop {
+  position: absolute;
+  inset-block-start: calc(100% + 6px);
+  inset-inline-start: 0;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  min-inline-size: 200px;
+  padding: 22px 4px 4px;
+  border-radius: 10px;
+}
+
+.sp-pop::before { content: ""; position: absolute; inset: -8px; z-index: -1; }
+
+.sp-pop--side { inset-block-start: -26px; inset-inline-start: calc(100% + 4px); }
+
+.sp-pop-host:hover > .sp-pop,
+.sp-pop-host:focus-within > .sp-pop,
+.is-pinned .sp-pop { display: flex; }
+
+.sp-item {
+  display: flex;
+  inline-size: 100%;
+  align-items: center;
+  justify-content: space-between;
+  min-block-size: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: start;
+}
+
+.sp-item:hover,
+.sp-pop-host:hover > .sp-item { background: var(--hover); color: var(--text-primary); }
+.sp-item:active { background: var(--active); }
+.sp-item[aria-checked="true"] { background: var(--selected); color: var(--text-primary); }
+.sp-item:disabled { background: none; color: var(--text-disabled); cursor: not-allowed; }
+.sp-item__check { color: var(--text-primary); font-size: 12px; }
+.sp-item--muted { color: var(--text-muted); }
+.sp-item__chev { color: var(--text-muted); }
+
+.sp-sep { block-size: 1px; margin: 4px 6px; border: 0; background: var(--border-extra-subtle); }
+
+.sp-tip {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: calc(100% + 10px);
+  translate: 0 -50%;
+  z-index: 11;
+  display: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.sp-pop-host--tip:hover > .sp-tip,
+.sp-pop-host--tip:focus-within > .sp-tip,
+.is-pinned .sp-tip { display: block; }
+
+/* Elevation stack */
+
+.sp-stack__box { position: relative; padding: 22px 12px 12px; border-radius: 12px; }
+.sp-stack__box:not(:has(.sp-stack__box)) { inline-size: 56px; block-size: 56px; padding: 0; }
+.sp-stack__box > .sp-lvl { inset-block-start: 5px; inset-inline: 10px auto; }
+
+/* ─── Theming ───────────────────────────────────────────────────────────── */
+
+.th-list { display: flex; flex-direction: column; gap: 2px; }
+
+.th-list__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 6px;
+  min-block-size: 28px;
+}
+
+.th-list__name {
+  overflow: hidden;
+  color: var(--text-secondary-dark);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.th-chip {
+  inline-size: 22px;
+  block-size: 16px;
+  border-radius: 4px;
+  background:
+    linear-gradient(var(--chip), var(--chip)),
+    repeating-conic-gradient(#8884 0 25%, transparent 0 50%) 0 0 / 8px 8px;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+}
+
+.th-boards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-10);
+}
+
+@media (max-width: 1180px) {
+  .th-boards { grid-template-columns: 1fr; }
+}
+
+.th-board {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  border-radius: 8px;
+  background: var(--surface-1);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+  color: var(--text-secondary);
+  color-scheme: light;
+}
+
+.th-board[data-mode="dark"] { color-scheme: dark; }
+
+.th-board__head { display: flex; align-items: baseline; justify-content: space-between; }
+.th-board__head h3 { color: var(--text-primary); font-size: 15px; font-weight: 600; }
+.th-board__head span { color: var(--text-muted); font-family: var(--font-mono); font-size: 11px; }
+
+.th-board__group h4 {
+  margin-block-end: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.th-board__group ul { display: grid; gap: 4px; }
+
+.th-board__group li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.th-board__chip {
+  inline-size: 26px;
+  block-size: 18px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+
+.th-board__name { color: var(--text-primary); font-family: var(--font-mono); }
+.th-board__value { color: var(--text-muted); font-family: var(--font-mono); font-size: 11px; }
+
+.th-board__shadows { display: flex; flex-wrap: wrap; gap: 14px; padding: 6px 2px 10px; }
+
+.th-board__shadow {
+  display: grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* Surface card with open popovers needs room to overflow its preview card. */
+.preview-card:has(.sp-stages) { overflow: visible; }
